@@ -1,0 +1,53 @@
+---
+title: "FTE Cleaning"
+output: html_notebook
+---
+
+Only run this if the workspace needs to be cleared.
+```{r}
+##Clear working directory
+rm(list=ls())
+
+```
+
+Load all of the libraries needed and set the working directory. The working directory is where the files are stored. When copying this code to a different computer, save the base files to a folder and change the working directory to that folder. That folder is where files will be read from and saved to.
+```{r}
+
+library(dplyr)
+library(tidyr)
+setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte")
+```
+
+```{r}
+fte<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/2016_downloadable_data/16empst.txt", header=FALSE)
+```
+
+Separate the tab data into separate columns by their position in the row
+```{r}
+fte <-
+  tidyr::separate(
+    data =fte,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    into = c("State Code", "Summary Code", "County Code", "Unit ID","Supplemental Code",
+             "Sub Code","B1",
+             "Data Function","Full Time Employees","B2",
+             "FTE Data Flag","Full Time Payroll","B3",
+             "FT Payroll Data Flag","Part Time Employees", "B4",
+             "PT Data Flag", "Part Time Payroll", "B5",
+             "Part Time Payroll Data Flag", "Part Time Hours","B6",
+             "Part Time Hours Data Flag", "Full Time Equivalent Employees"),
+    remove = FALSE
+  ) 
+
+fte <-
+  tidyr::separate(
+    data =fte,
+    col = V1,
+    sep = c(14),
+    into = c("Individual Unit ID","Delete"),
+    remove = TRUE
+  ) 
+fte<-subset(fte,select=-c(Delete))
+```
+
