@@ -15,11 +15,15 @@ Load all of the libraries needed and set the working directory. The working dire
 
 library(dplyr)
 library(tidyr)
+library(stringr)
+library(base)
 setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte")
 ```
 
 ```{r}
-fte<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/2016_downloadable_data/16empst.txt", header=FALSE)
+fte<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/2017_individual_unit_files (1)/17empst.txt", header=FALSE)
+gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
+gov_fips<-gov_fips[c(2:4)]
 ```
 
 Separate the tab data into separate columns by their position in the row
@@ -29,14 +33,14 @@ fte <-
     data =fte,
     col = V1,
     sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
-    into = c("State Code", "Summary Code", "County Code", "Unit ID","Supplemental Code",
-             "Sub Code","B1",
-             "Data Function","Full Time Employees","B2",
+    into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
+             "Sub_Code","B1",
+             "Data_Function","Full Time Employees","B2",
              "FTE Data Flag","Full Time Payroll","B3",
              "FT Payroll Data Flag","Part Time Employees", "B4",
              "PT Data Flag", "Part Time Payroll", "B5",
              "Part Time Payroll Data Flag", "Part Time Hours","B6",
-             "Part Time Hours Data Flag", "Full Time Equivalent Employees"),
+             "Part Time Hours Data Flag", "Full_Time_Equivalent_Employees"),
     remove = FALSE
   ) 
 
@@ -49,5 +53,40 @@ fte <-
     remove = TRUE
   ) 
 fte<-subset(fte,select=-c(Delete))
+
+fte$State_Code<-as.numeric(fte$State_Code)
 ```
+
+```{r}
+fte$ID<-paste(fte$State_Code,fte$Summary_Code, fte$County_Code, fte$Unit_ID, sep="")
+```
+
+Merge the linking file to the FTE data 
+```{r}
+ID_match_FTE<-merge(fte,gov_fips, by.x="ID",by.y="ID", no.dups = TRUE)
+
+##filter out only the rows that have the data function of 000 which is the total - all government employment functions.
+ID_match_FTE<-filter(ID_match_FTE, Data_Function == "000")
+ID_match_FTE<-subset(ID_match_FTE, select=-c(Name))
+
+```
+
+
+```{r}
+master<-read.csv("/Users/miritfriedman/Desktop/Confirmed_v4.csv")
+
+```
+
+```{r}
+
+fte_output<-merge(ID_match_FTE,master, by.x="FIPS",by.y="FIPS")
+fte_output<-unique(fte_output)
+
+```
+
+Subset out the rows of interest
+```{r}
+fte_output<-subset(fte_output, select=c(FIPS, ID, PWSID, Full_Time_Equivalent_Employees, PWS.Name))
+```
+
 
