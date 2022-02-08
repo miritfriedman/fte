@@ -244,34 +244,111 @@ The following objects are masked from ‘package:base’:
 
     intersect, setdiff, setequal, union</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5cilcbnNldHdkKFwiL1VzZXJzL21pcml0ZnJpZWRtYW4vRGVza3RvcC9TcXVlZXplIERhdGEvZnRlXCIpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5cilcbmxpYnJhcnkoc3RyaW5ncilcbmxpYnJhcnkoYmFzZSlcbnNldHdkKFwiL1VzZXJzL21pcml0ZnJpZWRtYW4vRGVza3RvcC9TcXVlZXplIERhdGEvZnRlXCIpXG5gYGAifQ== -->
 <pre class="r"><code>library(tidyr)
+library(stringr)
+library(base)
 setwd(&quot;/Users/miritfriedman/Desktop/Squeeze Data/fte&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlPC0gcmVhZC5jc3YoXCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL1NxdWVlemUgRGF0YS9mdGUvMjAxNl9kb3dubG9hZGFibGVfZGF0YS8xNmVtcHN0LnR4dFwiLCBoZWFkZXI9RkFMU0UpXG5gYGAifQ== -->
-<pre class="r"><code>fte&lt;- read.csv(&quot;/Users/miritfriedman/Desktop/Squeeze Data/fte/2016_downloadable_data/16empst.txt&quot;, header=FALSE)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlPC0gcmVhZC5jc3YoXCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL1NxdWVlemUgRGF0YS9mdGUvMjAxN19pbmRpdmlkdWFsX3VuaXRfZmlsZXMgKDEpLzE3ZW1wc3QudHh0XCIsIGhlYWRlcj1GQUxTRSlcbmdvdl9maXBzPC1yZWFkLmNzdihcIi9Vc2Vycy9taXJpdGZyaWVkbWFuL0Rlc2t0b3AvU3F1ZWV6ZSBEYXRhL2dvdklEX3RvX0ZJUFMuY3N2XCIpXG5nb3ZfZmlwczwtZ292X2ZpcHNbYygyOjQpXVxuYGBgIn0= -->
+<pre class="r"><code>fte&lt;- read.csv(&quot;/Users/miritfriedman/Desktop/Squeeze Data/fte/2017_individual_unit_files (1)/17empst.txt&quot;, header=FALSE)
+gov_fips&lt;-read.csv(&quot;/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv&quot;)
+gov_fips&lt;-gov_fips[c(2:4)]</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Separate the tab data into separate columns by their position in the row</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlPC1zdWJzZXQoZnRlLHNlbGVjdD0tYyhcIkRlbGV0ZVwiKSlcblxuYGBgIn0= -->
-<pre class="r"><code>fte&lt;-subset(fte,select=-c(&quot;Delete&quot;))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlIDwtXG4gIHRpZHlyOjpzZXBhcmF0ZShcbiAgICBkYXRhID1mdGUsXG4gICAgY29sID0gVjEsXG4gICAgc2VwID0gYygyLDMsNiw5LDEyLDE0LDE3LDIwLDMwLDMxLDMyLDQ0LDQ1LDQ2LDU2LDU3LDU4LDcwLDcxLDcyLDgyLDgzLDg0LDk0KSxcbiAgICBpbnRvID0gYyhcIlN0YXRlX0NvZGVcIiwgXCJTdW1tYXJ5X0NvZGVcIiwgXCJDb3VudHlfQ29kZVwiLCBcIlVuaXRfSURcIixcIlN1cHBsZW1lbnRhbF9Db2RlXCIsXG4gICAgICAgICAgICAgXCJTdWJfQ29kZVwiLFwiQjFcIixcbiAgICAgICAgICAgICBcIkRhdGFfRnVuY3Rpb25cIixcIkZ1bGwgVGltZSBFbXBsb3llZXNcIixcIkIyXCIsXG4gICAgICAgICAgICAgXCJGVEUgRGF0YSBGbGFnXCIsXCJGdWxsIFRpbWUgUGF5cm9sbFwiLFwiQjNcIixcbiAgICAgICAgICAgICBcIkZUIFBheXJvbGwgRGF0YSBGbGFnXCIsXCJQYXJ0IFRpbWUgRW1wbG95ZWVzXCIsIFwiQjRcIixcbiAgICAgICAgICAgICBcIlBUIERhdGEgRmxhZ1wiLCBcIlBhcnQgVGltZSBQYXlyb2xsXCIsIFwiQjVcIixcbiAgICAgICAgICAgICBcIlBhcnQgVGltZSBQYXlyb2xsIERhdGEgRmxhZ1wiLCBcIlBhcnQgVGltZSBIb3Vyc1wiLFwiQjZcIixcbiAgICAgICAgICAgICBcIlBhcnQgVGltZSBIb3VycyBEYXRhIEZsYWdcIiwgXCJGdWxsX1RpbWVfRXF1aXZhbGVudF9FbXBsb3llZXNcIiksXG4gICAgcmVtb3ZlID0gRkFMU0VcbiAgKSBcblxuZnRlIDwtXG4gIHRpZHlyOjpzZXBhcmF0ZShcbiAgICBkYXRhID1mdGUsXG4gICAgY29sID0gVjEsXG4gICAgc2VwID0gYygxNCksXG4gICAgaW50byA9IGMoXCJJbmRpdmlkdWFsIFVuaXQgSURcIixcIkRlbGV0ZVwiKSxcbiAgICByZW1vdmUgPSBUUlVFXG4gICkgXG5mdGU8LXN1YnNldChmdGUsc2VsZWN0PS1jKERlbGV0ZSkpXG5cbmZ0ZSRTdGF0ZV9Db2RlPC1hcy5udW1lcmljKGZ0ZSRTdGF0ZV9Db2RlKVxuYGBgIn0= -->
+<pre class="r"><code>fte &lt;-
+  tidyr::separate(
+    data =fte,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    into = c(&quot;State_Code&quot;, &quot;Summary_Code&quot;, &quot;County_Code&quot;, &quot;Unit_ID&quot;,&quot;Supplemental_Code&quot;,
+             &quot;Sub_Code&quot;,&quot;B1&quot;,
+             &quot;Data_Function&quot;,&quot;Full Time Employees&quot;,&quot;B2&quot;,
+             &quot;FTE Data Flag&quot;,&quot;Full Time Payroll&quot;,&quot;B3&quot;,
+             &quot;FT Payroll Data Flag&quot;,&quot;Part Time Employees&quot;, &quot;B4&quot;,
+             &quot;PT Data Flag&quot;, &quot;Part Time Payroll&quot;, &quot;B5&quot;,
+             &quot;Part Time Payroll Data Flag&quot;, &quot;Part Time Hours&quot;,&quot;B6&quot;,
+             &quot;Part Time Hours Data Flag&quot;, &quot;Full_Time_Equivalent_Employees&quot;),
+    remove = FALSE
+  ) 
+
+fte &lt;-
+  tidyr::separate(
+    data =fte,
+    col = V1,
+    sep = c(14),
+    into = c(&quot;Individual Unit ID&quot;,&quot;Delete&quot;),
+    remove = TRUE
+  ) 
+fte&lt;-subset(fte,select=-c(Delete))
+
+fte$State_Code&lt;-as.numeric(fte$State_Code)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlJElEPC1wYXN0ZShmdGUkU3RhdGVfQ29kZSxmdGUkU3VtbWFyeV9Db2RlLCBmdGUkQ291bnR5X0NvZGUsIGZ0ZSRVbml0X0lELCBzZXA9XCJcIilcbmBgYCJ9 -->
+<pre class="r"><code>fte$ID&lt;-paste(fte$State_Code,fte$Summary_Code, fte$County_Code, fte$Unit_ID, sep=&quot;&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Merge the linking file to the FTE data</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSURfbWF0Y2hfRlRFPC1tZXJnZShmdGUsZ292X2ZpcHMsIGJ5Lng9XCJJRFwiLGJ5Lnk9XCJJRFwiLCBuby5kdXBzID0gVFJVRSlcblxuIyNmaWx0ZXIgb3V0IG9ubHkgdGhlIHJvd3MgdGhhdCBoYXZlIHRoZSBkYXRhIGZ1bmN0aW9uIG9mIDAwMCB3aGljaCBpcyB0aGUgdG90YWwgLSBhbGwgZ292ZXJubWVudCBlbXBsb3ltZW50IGZ1bmN0aW9ucy5cbklEX21hdGNoX0ZURTwtZmlsdGVyKElEX21hdGNoX0ZURSwgRGF0YV9GdW5jdGlvbiA9PSBcIjAwMFwiKVxuSURfbWF0Y2hfRlRFPC1zdWJzZXQoSURfbWF0Y2hfRlRFLCBzZWxlY3Q9LWMoTmFtZSkpXG5cbmBgYCJ9 -->
+<pre class="r"><code>ID_match_FTE&lt;-merge(fte,gov_fips, by.x=&quot;ID&quot;,by.y=&quot;ID&quot;, no.dups = TRUE)
+
+##filter out only the rows that have the data function of 000 which is the total - all government employment functions.
+ID_match_FTE&lt;-filter(ID_match_FTE, Data_Function == &quot;000&quot;)
+ID_match_FTE&lt;-subset(ID_match_FTE, select=-c(Name))
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gLWMoXCJEZWxldGVcIikgOiBpbnZhbGlkIGFyZ3VtZW50IHRvIHVuYXJ5IG9wZXJhdG9yXG4ifQ== -->
-<pre><code>Error in -c(&quot;Delete&quot;) : invalid argument to unary operator</code></pre>
-<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFzdGVyPC1yZWFkLmNzdihcIi9Vc2Vycy9taXJpdGZyaWVkbWFuL0Rlc2t0b3AvQ29uZmlybWVkX3Y0LmNzdlwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>master&lt;-read.csv(&quot;/Users/miritfriedman/Desktop/Confirmed_v4.csv&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5mdGVfb3V0cHV0PC1tZXJnZShJRF9tYXRjaF9GVEUsbWFzdGVyLCBieS54PVwiRklQU1wiLGJ5Lnk9XCJGSVBTXCIpXG5mdGVfb3V0cHV0PC11bmlxdWUoZnRlX291dHB1dClcblxuYGBgIn0= -->
+<pre class="r"><code>
+fte_output&lt;-merge(ID_match_FTE,master, by.x=&quot;FIPS&quot;,by.y=&quot;FIPS&quot;)
+fte_output&lt;-unique(fte_output)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Subset out the rows of interest</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZnRlX291dHB1dDwtc3Vic2V0KGZ0ZV9vdXRwdXQsIHNlbGVjdD1jKEZJUFMsIElELCBQV1NJRCwgRnVsbF9UaW1lX0VxdWl2YWxlbnRfRW1wbG95ZWVzLCBQV1MuTmFtZSkpXG5gYGAifQ== -->
+<pre class="r"><code>fte_output&lt;-subset(fte_output, select=c(FIPS, ID, PWSID, Full_Time_Equivalent_Employees, PWS.Name))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Save File Output</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRlRFIENsZWFuaW5nIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpPbmx5IHJ1biB0aGlzIGlmIHRoZSB3b3Jrc3BhY2UgbmVlZHMgdG8gYmUgY2xlYXJlZC4KYGBge3J9CiMjQ2xlYXIgd29ya2luZyBkaXJlY3RvcnkKcm0obGlzdD1scygpKQoKYGBgCgpMb2FkIGFsbCBvZiB0aGUgbGlicmFyaWVzIG5lZWRlZCBhbmQgc2V0IHRoZSB3b3JraW5nIGRpcmVjdG9yeS4gVGhlIHdvcmtpbmcgZGlyZWN0b3J5IGlzIHdoZXJlIHRoZSBmaWxlcyBhcmUgc3RvcmVkLiBXaGVuIGNvcHlpbmcgdGhpcyBjb2RlIHRvIGEgZGlmZmVyZW50IGNvbXB1dGVyLCBzYXZlIHRoZSBiYXNlIGZpbGVzIHRvIGEgZm9sZGVyIGFuZCBjaGFuZ2UgdGhlIHdvcmtpbmcgZGlyZWN0b3J5IHRvIHRoYXQgZm9sZGVyLiBUaGF0IGZvbGRlciBpcyB3aGVyZSBmaWxlcyB3aWxsIGJlIHJlYWQgZnJvbSBhbmQgc2F2ZWQgdG8uCmBgYHtyfQoKbGlicmFyeShkcGx5cikKbGlicmFyeSh0aWR5cikKc2V0d2QoIi9Vc2Vycy9taXJpdGZyaWVkbWFuL0Rlc2t0b3AvU3F1ZWV6ZSBEYXRhL2Z0ZSIpCmBgYAoKYGBge3J9CmZ0ZTwtIHJlYWQuY3N2KCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL1NxdWVlemUgRGF0YS9mdGUvMjAxNl9kb3dubG9hZGFibGVfZGF0YS8xNmVtcHN0LnR4dCIsIGhlYWRlcj1GQUxTRSkKYGBgCgpTZXBhcmF0ZSB0aGUgdGFiIGRhdGEgaW50byBzZXBhcmF0ZSBjb2x1bW5zIGJ5IHRoZWlyIHBvc2l0aW9uIGluIHRoZSByb3cKYGBge3J9CmZ0ZSA8LQogIHRpZHlyOjpzZXBhcmF0ZSgKICAgIGRhdGEgPWZ0ZSwKICAgIGNvbCA9IFYxLAogICAgc2VwID0gYygyLDMsNiw5LDEyLDE0LDE3LDIwLDMwLDMxLDMyLDQ0LDQ1LDQ2LDU2LDU3LDU4LDcwLDcxLDcyLDgyLDgzLDg0LDk0KSwKICAgIGludG8gPSBjKCJTdGF0ZSBDb2RlIiwgIlN1bW1hcnkgQ29kZSIsICJDb3VudHkgQ29kZSIsICJVbml0IElEIiwiU3VwcGxlbWVudGFsIENvZGUiLAogICAgICAgICAgICAgIlN1YiBDb2RlIiwiQjEiLAogICAgICAgICAgICAgIkRhdGEgRnVuY3Rpb24iLCJGdWxsIFRpbWUgRW1wbG95ZWVzIiwiQjIiLAogICAgICAgICAgICAgIkZURSBEYXRhIEZsYWciLCJGdWxsIFRpbWUgUGF5cm9sbCIsIkIzIiwKICAgICAgICAgICAgICJGVCBQYXlyb2xsIERhdGEgRmxhZyIsIlBhcnQgVGltZSBFbXBsb3llZXMiLCAiQjQiLAogICAgICAgICAgICAgIlBUIERhdGEgRmxhZyIsICJQYXJ0IFRpbWUgUGF5cm9sbCIsICJCNSIsCiAgICAgICAgICAgICAiUGFydCBUaW1lIFBheXJvbGwgRGF0YSBGbGFnIiwgIlBhcnQgVGltZSBIb3VycyIsIkI2IiwKICAgICAgICAgICAgICJQYXJ0IFRpbWUgSG91cnMgRGF0YSBGbGFnIiwgIkZ1bGwgVGltZSBFcXVpdmFsZW50IEVtcGxveWVlcyIpLAogICAgcmVtb3ZlID0gRkFMU0UKICApIAoKZnRlIDwtCiAgdGlkeXI6OnNlcGFyYXRlKAogICAgZGF0YSA9ZnRlLAogICAgY29sID0gVjEsCiAgICBzZXAgPSBjKDE0KSwKICAgIGludG8gPSBjKCJJbmRpdmlkdWFsIFVuaXQgSUQiLCJEZWxldGUiKSwKICAgIHJlbW92ZSA9IFRSVUUKICApIApmdGU8LXN1YnNldChmdGUsc2VsZWN0PS1jKERlbGV0ZSkpCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRlRFIENsZWFuaW5nIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpPbmx5IHJ1biB0aGlzIGlmIHRoZSB3b3Jrc3BhY2UgbmVlZHMgdG8gYmUgY2xlYXJlZC4KYGBge3J9CiMjQ2xlYXIgd29ya2luZyBkaXJlY3RvcnkKcm0obGlzdD1scygpKQoKYGBgCgpMb2FkIGFsbCBvZiB0aGUgbGlicmFyaWVzIG5lZWRlZCBhbmQgc2V0IHRoZSB3b3JraW5nIGRpcmVjdG9yeS4gVGhlIHdvcmtpbmcgZGlyZWN0b3J5IGlzIHdoZXJlIHRoZSBmaWxlcyBhcmUgc3RvcmVkLiBXaGVuIGNvcHlpbmcgdGhpcyBjb2RlIHRvIGEgZGlmZmVyZW50IGNvbXB1dGVyLCBzYXZlIHRoZSBiYXNlIGZpbGVzIHRvIGEgZm9sZGVyIGFuZCBjaGFuZ2UgdGhlIHdvcmtpbmcgZGlyZWN0b3J5IHRvIHRoYXQgZm9sZGVyLiBUaGF0IGZvbGRlciBpcyB3aGVyZSBmaWxlcyB3aWxsIGJlIHJlYWQgZnJvbSBhbmQgc2F2ZWQgdG8uCmBgYHtyfQoKbGlicmFyeShkcGx5cikKbGlicmFyeSh0aWR5cikKbGlicmFyeShzdHJpbmdyKQpsaWJyYXJ5KGJhc2UpCnNldHdkKCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL1NxdWVlemUgRGF0YS9mdGUiKQpgYGAKCmBgYHtyfQpmdGU8LSByZWFkLmNzdigiL1VzZXJzL21pcml0ZnJpZWRtYW4vRGVza3RvcC9TcXVlZXplIERhdGEvZnRlLzIwMTdfaW5kaXZpZHVhbF91bml0X2ZpbGVzICgxKS8xN2VtcHN0LnR4dCIsIGhlYWRlcj1GQUxTRSkKZ292X2ZpcHM8LXJlYWQuY3N2KCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL1NxdWVlemUgRGF0YS9nb3ZJRF90b19GSVBTLmNzdiIpCmdvdl9maXBzPC1nb3ZfZmlwc1tjKDI6NCldCmBgYAoKU2VwYXJhdGUgdGhlIHRhYiBkYXRhIGludG8gc2VwYXJhdGUgY29sdW1ucyBieSB0aGVpciBwb3NpdGlvbiBpbiB0aGUgcm93CmBgYHtyfQpmdGUgPC0KICB0aWR5cjo6c2VwYXJhdGUoCiAgICBkYXRhID1mdGUsCiAgICBjb2wgPSBWMSwKICAgIHNlcCA9IGMoMiwzLDYsOSwxMiwxNCwxNywyMCwzMCwzMSwzMiw0NCw0NSw0Niw1Niw1Nyw1OCw3MCw3MSw3Miw4Miw4Myw4NCw5NCksCiAgICBpbnRvID0gYygiU3RhdGVfQ29kZSIsICJTdW1tYXJ5X0NvZGUiLCAiQ291bnR5X0NvZGUiLCAiVW5pdF9JRCIsIlN1cHBsZW1lbnRhbF9Db2RlIiwKICAgICAgICAgICAgICJTdWJfQ29kZSIsIkIxIiwKICAgICAgICAgICAgICJEYXRhX0Z1bmN0aW9uIiwiRnVsbCBUaW1lIEVtcGxveWVlcyIsIkIyIiwKICAgICAgICAgICAgICJGVEUgRGF0YSBGbGFnIiwiRnVsbCBUaW1lIFBheXJvbGwiLCJCMyIsCiAgICAgICAgICAgICAiRlQgUGF5cm9sbCBEYXRhIEZsYWciLCJQYXJ0IFRpbWUgRW1wbG95ZWVzIiwgIkI0IiwKICAgICAgICAgICAgICJQVCBEYXRhIEZsYWciLCAiUGFydCBUaW1lIFBheXJvbGwiLCAiQjUiLAogICAgICAgICAgICAgIlBhcnQgVGltZSBQYXlyb2xsIERhdGEgRmxhZyIsICJQYXJ0IFRpbWUgSG91cnMiLCJCNiIsCiAgICAgICAgICAgICAiUGFydCBUaW1lIEhvdXJzIERhdGEgRmxhZyIsICJGdWxsX1RpbWVfRXF1aXZhbGVudF9FbXBsb3llZXMiKSwKICAgIHJlbW92ZSA9IEZBTFNFCiAgKSAKCmZ0ZSA8LQogIHRpZHlyOjpzZXBhcmF0ZSgKICAgIGRhdGEgPWZ0ZSwKICAgIGNvbCA9IFYxLAogICAgc2VwID0gYygxNCksCiAgICBpbnRvID0gYygiSW5kaXZpZHVhbCBVbml0IElEIiwiRGVsZXRlIiksCiAgICByZW1vdmUgPSBUUlVFCiAgKSAKZnRlPC1zdWJzZXQoZnRlLHNlbGVjdD0tYyhEZWxldGUpKQoKZnRlJFN0YXRlX0NvZGU8LWFzLm51bWVyaWMoZnRlJFN0YXRlX0NvZGUpCmBgYAoKYGBge3J9CmZ0ZSRJRDwtcGFzdGUoZnRlJFN0YXRlX0NvZGUsZnRlJFN1bW1hcnlfQ29kZSwgZnRlJENvdW50eV9Db2RlLCBmdGUkVW5pdF9JRCwgc2VwPSIiKQpgYGAKCk1lcmdlIHRoZSBsaW5raW5nIGZpbGUgdG8gdGhlIEZURSBkYXRhIApgYGB7cn0KSURfbWF0Y2hfRlRFPC1tZXJnZShmdGUsZ292X2ZpcHMsIGJ5Lng9IklEIixieS55PSJJRCIsIG5vLmR1cHMgPSBUUlVFKQoKIyNmaWx0ZXIgb3V0IG9ubHkgdGhlIHJvd3MgdGhhdCBoYXZlIHRoZSBkYXRhIGZ1bmN0aW9uIG9mIDAwMCB3aGljaCBpcyB0aGUgdG90YWwgLSBhbGwgZ292ZXJubWVudCBlbXBsb3ltZW50IGZ1bmN0aW9ucy4KSURfbWF0Y2hfRlRFPC1maWx0ZXIoSURfbWF0Y2hfRlRFLCBEYXRhX0Z1bmN0aW9uID09ICIwMDAiKQpJRF9tYXRjaF9GVEU8LXN1YnNldChJRF9tYXRjaF9GVEUsIHNlbGVjdD0tYyhOYW1lKSkKCmBgYAoKCmBgYHtyfQptYXN0ZXI8LXJlYWQuY3N2KCIvVXNlcnMvbWlyaXRmcmllZG1hbi9EZXNrdG9wL0NvbmZpcm1lZF92NC5jc3YiKQoKYGBgCgpgYGB7cn0KCmZ0ZV9vdXRwdXQ8LW1lcmdlKElEX21hdGNoX0ZURSxtYXN0ZXIsIGJ5Lng9IkZJUFMiLGJ5Lnk9IkZJUFMiKQpmdGVfb3V0cHV0PC11bmlxdWUoZnRlX291dHB1dCkKCmBgYAoKU3Vic2V0IG91dCB0aGUgcm93cyBvZiBpbnRlcmVzdApgYGB7cn0KZnRlX291dHB1dDwtc3Vic2V0KGZ0ZV9vdXRwdXQsIHNlbGVjdD1jKEZJUFMsIElELCBQV1NJRCwgRnVsbF9UaW1lX0VxdWl2YWxlbnRfRW1wbG95ZWVzLCBQV1MuTmFtZSkpCmBgYAoKU2F2ZSBGaWxlIE91dHB1dApgYGB7cn0Kd3JpdGUuY3N2KGZ0ZV9vdXRwdXQsICJmdGVfb3V0cHV0XzIwMTcuY3N2IikKYGBgCgo=</div>
 
 
 
