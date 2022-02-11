@@ -1,6 +1,8 @@
 ---
 title: "FTE Cleaning"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 Only run this if the workspace needs to be cleared.
@@ -17,17 +19,166 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(base)
-setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte")
 ```
 
 ```{r}
-fte<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/2017_individual_unit_files (1)/17empst.txt", header=FALSE)
-gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
-gov_fips<-gov_fips[c(2:4)]
+setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data")
 ```
 
-Separate the tab data into separate columns by their position in the row
+Complete the cleaning for the 2017 data.
 ```{r}
+
+fte17<- read.csv("17cempst.csv", header=FALSE)
+
+#Separate the data into separate columns based on their position. 
+fte17 <-
+  tidyr::separate(
+    data =fte17,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
+             "Sub_Code","B1",
+             "Data_Function","Full Time Employees","B2",
+             "FTE Data Flag","Full Time Payroll","B3",
+             "FT Payroll Data Flag","Part Time Employees", "B4",
+             "PT Data Flag", "Part Time Payroll", "B5",
+             "Part Time Payroll Data Flag", "Part Time Hours","B6",
+             "Part Time Hours Data Flag", "Full_Time_Equivalent_Employees"),
+    remove = FALSE
+  ) 
+
+fte17 <-
+  tidyr::separate(
+    data =fte17,
+    col = V1,
+    sep = c(14),
+    into = c("Individual Unit ID","Delete"),
+    remove = TRUE
+  ) 
+fte17<-subset(fte17,select=-c(Delete))
+
+fte17$State_Code<-as.numeric(fte17$State_Code)
+
+fte17$ID<-paste(fte17$State_Code,fte17$Summary_Code, fte17$County_Code, fte17$Unit_ID, sep="")
+```
+
+Complete the cleaning for the 2012 data
+```{r}
+fte12<- read.csv("12cempst.csv", header=FALSE)
+
+#Separate the data into separate columns based on their position. 
+fte12 <-
+  tidyr::separate(
+    data =fte12,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
+             "Sub_Code","B1",
+             "Data_Function","Full Time Employees","B2",
+             "FTE Data Flag","Full Time Payroll","B3",
+             "FT Payroll Data Flag","Part Time Employees", "B4",
+             "PT Data Flag", "Part Time Payroll", "B5",
+             "Part Time Payroll Data Flag", "Part Time Hours","B6",
+             "Part Time Hours Data Flag", "Full_Time_Equivalent_Employees"),
+    remove = FALSE
+  ) 
+
+fte12 <-
+  tidyr::separate(
+    data =fte12,
+    col = V1,
+    sep = c(14),
+    into = c("Individual Unit ID","Delete"),
+    remove = TRUE
+  ) 
+fte12<-subset(fte12,select=-c(Delete))
+
+fte12$State_Code<-as.numeric(fte12$State_Code)
+
+#create the complete ID code to be used.
+fte12$ID<-paste(fte12$State_Code,fte12$Summary_Code, fte12$County_Code, fte12$Unit_ID, sep="")
+```
+
+
+Complete the cleaning for the 2007 data.
+```{r}
+fte07<- read.csv("07cempst.csv", header=FALSE)
+
+#Separate the data into separate columns based on their position. 
+fte07 <-
+  tidyr::separate(
+    data =fte07,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
+             "Sub_Code","B1",
+             "Data_Function","Full Time Employees","B2",
+             "FTE Data Flag","Full Time Payroll","B3",
+             "FT Payroll Data Flag","Part Time Employees", "B4",
+             "PT Data Flag", "Part Time Payroll", "B5",
+             "Part Time Payroll Data Flag", "Part Time Hours","B6",
+             "Part Time Hours Data Flag", "Full_Time_Equivalent_Employees"),
+    remove = FALSE
+  ) 
+
+fte07 <-
+  tidyr::separate(
+    data =fte07,
+    col = V1,
+    sep = c(14),
+    into = c("Individual Unit ID","Delete"),
+    remove = TRUE
+  ) 
+fte07<-subset(fte07,select=-c(Delete))
+
+fte07$State_Code<-as.numeric(fte07$State_Code)
+
+
+#create the complete ID code to be used.
+fte07$ID<-paste(fte07$State_Code,fte07$Summary_Code, fte07$County_Code, fte07$Unit_ID, sep="")
+```
+
+Complete the cleaning for the 2002 data.
+```{r}
+fte02<- read.csv("02cempst.csv", header=FALSE)
+
+#Separate the data into separate columns based on their position. 
+fte02 <-
+  tidyr::separate(
+    data =fte02,
+    col = V1,
+    sep = c(2,3,6,9,12,14,17,20,30,31,32,42,44,46,55,64,74,76,94),
+    into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
+             "Sub_Code","B1",
+             "Data_Function","Full Time Employees","B2",
+             "FTE Data Flag","Full Time Payroll","B3",
+             "FT Payroll Data Flag","Part Time Employees", "Part Time Payroll", 
+             "Part Time Hours","Full_Time_Equivalent_Employees"),
+    remove = FALSE
+  ) 
+
+fte02 <-
+  tidyr::separate(
+    data =fte02,
+    col = V1,
+    sep = c(14),
+    into = c("Individual Unit ID","Delete"),
+    remove = TRUE
+  ) 
+fte02<-subset(fte02,select=-c(Delete))
+
+fte02$State_Code<-as.numeric(fte02$State_Code)
+
+
+#create the complete ID code to be used.
+fte02$ID<-paste(fte02$State_Code,fte02$Summary_Code, fte02$County_Code, fte02$Unit_ID, sep="")
+```
+
+Complete the cleaning for the 1997 data. 
+```{r}
+fte<- read.csv("17cempst.csv", header=FALSE)
+
+#Separate the data into separate columns based on their position. 
 fte <-
   tidyr::separate(
     data =fte,
@@ -55,11 +206,18 @@ fte <-
 fte<-subset(fte,select=-c(Delete))
 
 fte$State_Code<-as.numeric(fte$State_Code)
-```
 
-```{r}
+#create the complete ID code to be used.
 fte$ID<-paste(fte$State_Code,fte$Summary_Code, fte$County_Code, fte$Unit_ID, sep="")
 ```
+
+
+Read in the crosswalk file to link FIPS with GOV individual unit identifier codes.
+```{r}
+gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
+gov_fips<-gov_fips[c(2:4)]
+```
+
 
 Merge the linking file to the FTE data 
 ```{r}
@@ -89,4 +247,8 @@ Subset out the rows of interest
 fte_output<-subset(fte_output, select=c(FIPS, ID, PWSID, Full_Time_Equivalent_Employees, PWS.Name))
 ```
 
+Save File Output
+```{r}
+write.csv(fte_output, "fte_output_2017.csv")
+```
 
