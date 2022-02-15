@@ -4,6 +4,11 @@ output:
   html_document:
     df_print: paged
 ---
+Since we're using R Markdown files, you cannot change the working directory using setwd(). Using this function pulls the files from the working directory that is set here, not what is set as the working directory.
+```{r setup, include=FALSE, echo=FALSE}
+require("knitr")
+opts_knit$set(root.dir = "/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data")
+```
 
 Only run this if the workspace needs to be cleared.
 ```{r}
@@ -22,6 +27,8 @@ library(base)
 ```
 
 ```{r}
+
+opts_knit$set(root.dir = "/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data")
 setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data")
 ```
 
@@ -60,6 +67,13 @@ fte17<-subset(fte17,select=-c(Delete))
 fte17$State_Code<-as.numeric(fte17$State_Code)
 
 fte17$ID<-paste(fte17$State_Code,fte17$Summary_Code, fte17$County_Code, fte17$Unit_ID, sep="")
+
+#select out only the data totals for each place. The data function code for total is 000
+fte17<-fte17[fte17$Data_Function == '000', ]
+
+
+#Clip the file by the master list 
+fte17<- filter(fte17,ID %in% master$ID)
 ```
 
 Complete the cleaning for the 2012 data
@@ -97,6 +111,12 @@ fte12$State_Code<-as.numeric(fte12$State_Code)
 
 #create the complete ID code to be used.
 fte12$ID<-paste(fte12$State_Code,fte12$Summary_Code, fte12$County_Code, fte12$Unit_ID, sep="")
+
+#select out only the data totals for each place. The data function code for total is 000
+fte12<-fte12[fte12$Data_Function == '000', ]
+
+#Clip the file by the master list 
+fte12<- filter(fte12,ID %in% master$ID)
 ```
 
 
@@ -136,6 +156,12 @@ fte07$State_Code<-as.numeric(fte07$State_Code)
 
 #create the complete ID code to be used.
 fte07$ID<-paste(fte07$State_Code,fte07$Summary_Code, fte07$County_Code, fte07$Unit_ID, sep="")
+
+#select out only the data totals for each place. The data function code for total is 000
+fte07<-fte07[fte07$Data_Function == '000', ]
+
+#Clip the file by the master list 
+fte07<- filter(fte07,ID %in% master$ID)
 ```
 
 Complete the cleaning for the 2002 data.
@@ -147,12 +173,11 @@ fte02 <-
   tidyr::separate(
     data =fte02,
     col = V1,
-    sep = c(2,3,6,9,12,14,17,20,30,31,32,42,44,46,55,64,74,76,94),
+    sep = c(2,3,6,9,12,14,17,20,30,42,52,64,74,84),
     into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
              "Sub_Code","B1",
-             "Data_Function","Full Time Employees","B2",
-             "FTE Data Flag","Full Time Payroll","B3",
-             "FT Payroll Data Flag","Part Time Employees", "Part Time Payroll", 
+             "Data_Function","Full Time Employees","Full Time Payroll",
+             "Part Time Employees", "Part Time Payroll", 
              "Part Time Hours","Full_Time_Equivalent_Employees"),
     remove = FALSE
   ) 
@@ -172,43 +197,50 @@ fte02$State_Code<-as.numeric(fte02$State_Code)
 
 #create the complete ID code to be used.
 fte02$ID<-paste(fte02$State_Code,fte02$Summary_Code, fte02$County_Code, fte02$Unit_ID, sep="")
+
+#select out only the data totals for each place. The data function code for total is 000
+fte02<-fte02[fte02$Data_Function == '000', ]
+
+#Clip the file by the master list 
+fte02<- filter(fte02,ID %in% master$ID)
 ```
 
 Complete the cleaning for the 1997 data. 
 ```{r}
-fte<- read.csv("17cempst.csv", header=FALSE)
+fte97<- read.csv("97cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
-fte <-
+fte97 <-
   tidyr::separate(
-    data =fte,
+    data =fte97,
     col = V1,
-    sep = c(2,3,6,9,12,14,17,20,30,31,32,44,45,46,56,57,58,70,71,72,82,83,84,94),
+    sep = c(2,3,6,9,12,14,17,20,30,42,52,64,74,84),
     into = c("State_Code", "Summary_Code", "County_Code", "Unit_ID","Supplemental_Code",
              "Sub_Code","B1",
-             "Data_Function","Full Time Employees","B2",
-             "FTE Data Flag","Full Time Payroll","B3",
-             "FT Payroll Data Flag","Part Time Employees", "B4",
-             "PT Data Flag", "Part Time Payroll", "B5",
-             "Part Time Payroll Data Flag", "Part Time Hours","B6",
-             "Part Time Hours Data Flag", "Full_Time_Equivalent_Employees"),
+             "Data_Function","Full Time Employees","Full Time Payroll",
+             "Part Time Employees", "Part Time Payroll", 
+             "Part Time Hours","Full_Time_Equivalent_Employees"),
     remove = FALSE
   ) 
 
-fte <-
+fte97 <-
   tidyr::separate(
-    data =fte,
+    data =fte97,
     col = V1,
     sep = c(14),
     into = c("Individual Unit ID","Delete"),
     remove = TRUE
   ) 
-fte<-subset(fte,select=-c(Delete))
+fte97<-subset(fte97,select=-c(Delete))
 
-fte$State_Code<-as.numeric(fte$State_Code)
+fte97$State_Code<-as.numeric(fte97$State_Code)
 
 #create the complete ID code to be used.
-fte$ID<-paste(fte$State_Code,fte$Summary_Code, fte$County_Code, fte$Unit_ID, sep="")
+fte97$ID<-paste(fte97$State_Code,fte97$Summary_Code, fte97$County_Code, fte97$Unit_ID, sep="")
+
+fte97<-fte97[fte97$Data_Function == '000', ]
+#Clip the file by the master list 
+fte97<- filter(fte97,ID %in% master$ID)
 ```
 
 
@@ -216,6 +248,36 @@ Read in the crosswalk file to link FIPS with GOV individual unit identifier code
 ```{r}
 gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
 gov_fips<-gov_fips[c(2:4)]
+```
+
+
+```{r}
+master<-read.csv("/Users/miritfriedman/Desktop/Confirmed_v4.csv")
+
+```
+
+```{r}
+master<-data.frame(master, "ID", "YEAR",1997,2002,2007,2012,2017)
+#create the tidy format with a year 1997-2018 for each FIPS code
+master<-gather(master,"ID","YEAR","X1997","X2002","X2007","X2012","X2017",12:18)
+master<-master[!(master$YEAR=="ID" | master$YEAR=="YEAR"),]
+master<-subset(master,select=-c(ID))
+master<-subset(master,select=c(2,3,5,12))
+master<-merge(master,gov_fips,by = "FIPS")
+```
+
+
+```{r}
+master$FTE <- ifelse(
+    is.na(match(paste(master$ID), paste(fte17$ID))),
+    fte17$Full_Time_Equivalent_Employees,
+    "NA")
+
+master$FTE<-ifelse(master$YEAR == 2017 |master$ID == fte17$ID, fte17$Full_Time_Equivalent_Employees, 
+                  ifelse(master$YEAR == 2012 |master$ID == fte12$ID, fte12$Full_Time_Equivalent_Employees,
+                         ifelse(master$YEAR == 2007 |master$ID == fte07$ID, fte07$Full_Time_Equivalent_Employees,"NA")))
+                                #ifelse(master$YEAR == 2002 |master$ID == fte02$ID, fte02$Full_Time_Equivalent_Employees,
+                                      # ifelse(master$YEAR == 1997 |master$ID == fte97$ID, fte97$Full_Time_Equivalent_Employees)
 ```
 
 
@@ -230,10 +292,6 @@ ID_match_FTE<-subset(ID_match_FTE, select=-c(Name))
 ```
 
 
-```{r}
-master<-read.csv("/Users/miritfriedman/Desktop/Confirmed_v4.csv")
-
-```
 
 ```{r}
 
