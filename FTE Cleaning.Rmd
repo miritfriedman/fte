@@ -32,10 +32,34 @@ opts_knit$set(root.dir = "/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data
 setwd("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data")
 ```
 
+```{r}
+master<-read.csv("/Users/miritfriedman/Desktop/Confirmed_v7.csv")
+
+```
+
+
+Read in the crosswalk file to link FIPS with GOV individual unit identifier codes.
+```{r}
+gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
+gov_fips<-gov_fips[c(2:4)]
+```
+
+
+```{r}
+master<-data.frame(master, "ID", "YEAR",1997,2002,2007,2012,2017)
+#create the tidy format with a year 1997-2018 for each FIPS code
+master<-gather(master,"ID","YEAR","X1997","X2002","X2007","X2012","X2017",11:17)
+master<-master[!(master$YEAR=="ID" | master$YEAR=="YEAR"),]
+#master<-subset(master,select=-c(ID))
+master<-subset(master,select=c(2,3,5,11))
+master<-merge(master,gov_fips,by = "FIPS")
+```
+
+
 Complete the cleaning for the 2017 data.
 ```{r}
 
-fte17<- read.csv("17cempst.csv", header=FALSE)
+fte17<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/17cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
 fte17 <-
@@ -73,12 +97,12 @@ fte17<-fte17[fte17$Data_Function == '000', ]
 
 
 #Clip the file by the master list 
-fte17<- filter(fte17,ID %in% master$ID)
+fte17<- filter(fte17,ID %in% master$GOVSid)
 ```
 
 Complete the cleaning for the 2012 data
 ```{r}
-fte12<- read.csv("12cempst.csv", header=FALSE)
+fte12<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/12cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
 fte12 <-
@@ -116,13 +140,13 @@ fte12$ID<-paste(fte12$State_Code,fte12$Summary_Code, fte12$County_Code, fte12$Un
 fte12<-fte12[fte12$Data_Function == '000', ]
 
 #Clip the file by the master list 
-fte12<- filter(fte12,ID %in% master$ID)
+fte12<- filter(fte12,ID %in% master$GOVSid)
 ```
 
 
 Complete the cleaning for the 2007 data.
 ```{r}
-fte07<- read.csv("07cempst.csv", header=FALSE)
+fte07<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/07cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
 fte07 <-
@@ -161,12 +185,12 @@ fte07$ID<-paste(fte07$State_Code,fte07$Summary_Code, fte07$County_Code, fte07$Un
 fte07<-fte07[fte07$Data_Function == '000', ]
 
 #Clip the file by the master list 
-fte07<- filter(fte07,ID %in% master$ID)
+fte07<- filter(fte07,ID %in% master$GOVSid)
 ```
 
 Complete the cleaning for the 2002 data.
 ```{r}
-fte02<- read.csv("02cempst.csv", header=FALSE)
+fte02<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/02cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
 fte02 <-
@@ -202,12 +226,12 @@ fte02$ID<-paste(fte02$State_Code,fte02$Summary_Code, fte02$County_Code, fte02$Un
 fte02<-fte02[fte02$Data_Function == '000', ]
 
 #Clip the file by the master list 
-fte02<- filter(fte02,ID %in% master$ID)
+fte02<- filter(fte02,ID %in% master$GOVSid)
 ```
 
 Complete the cleaning for the 1997 data. 
 ```{r}
-fte97<- read.csv("97cempst.csv", header=FALSE)
+fte97<- read.csv("/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/97cempst.csv", header=FALSE)
 
 #Separate the data into separate columns based on their position. 
 fte97 <-
@@ -240,73 +264,79 @@ fte97$ID<-paste(fte97$State_Code,fte97$Summary_Code, fte97$County_Code, fte97$Un
 
 fte97<-fte97[fte97$Data_Function == '000', ]
 #Clip the file by the master list 
-fte97<- filter(fte97,ID %in% master$ID)
-```
-
-
-Read in the crosswalk file to link FIPS with GOV individual unit identifier codes.
-```{r}
-gov_fips<-read.csv("/Users/miritfriedman/Desktop/Squeeze Data/govID_to_FIPS.csv")
-gov_fips<-gov_fips[c(2:4)]
-```
-
-
-```{r}
-master<-read.csv("/Users/miritfriedman/Desktop/Confirmed_v4.csv")
-
+fte97<- filter(fte97,ID %in% master$GOVSid)
 ```
 
 ```{r}
-master<-data.frame(master, "ID", "YEAR",1997,2002,2007,2012,2017)
-#create the tidy format with a year 1997-2018 for each FIPS code
-master<-gather(master,"ID","YEAR","X1997","X2002","X2007","X2012","X2017",12:18)
-master<-master[!(master$YEAR=="ID" | master$YEAR=="YEAR"),]
-master<-subset(master,select=-c(ID))
-master<-subset(master,select=c(2,3,5,12))
-master<-merge(master,gov_fips,by = "FIPS")
+fte97$YEAR<-1997
+fte02$YEAR<-2002
+fte07$YEAR<-2007
+fte12$YEAR<-2012
+fte17$YEAR<-2017
+
+fte97<-subset(fte97, select=c(15:17))
+fte02<-subset(fte02, select=c(15:17))
+fte07<-subset(fte07, select=c(25:27))
+fte12<-subset(fte12, select=c(25:27))
+fte17<-subset(fte17, select=c(25:27))
+
+fte_merge<-bind_rows(fte97,fte02,fte07,fte12,fte17)
+fte_merge$Full_Time_Equivalent_Employees<-as.numeric(fte_merge$Full_Time_Equivalent_Employees)
+fte_merge<-rename(fte_merge, "GOVSid"="ID")
+fte_merge<-merge(fte_merge,gov_fips, by= "GOVSid")
+
+write.csv(fte_merge, "/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/FTE Modified Files/final_fte_output.csv")
+
+summary(fte_merge$Full_Time_Equivalent_Employees)
 ```
 
 
 ```{r}
-master$FTE <- ifelse(
-    is.na(match(paste(master$ID), paste(fte17$ID))),
-    fte17$Full_Time_Equivalent_Employees,
-    "NA")
+#master$FTE <- ifelse(
+    #is.na(match(paste(master$ID), paste(fte17$ID))),
+    #fte17$Full_Time_Equivalent_Employees,
+   # "NA")
 
-master$FTE<-ifelse(master$YEAR == 2017 |master$ID == fte17$ID, fte17$Full_Time_Equivalent_Employees, 
-                  ifelse(master$YEAR == 2012 |master$ID == fte12$ID, fte12$Full_Time_Equivalent_Employees,
-                         ifelse(master$YEAR == 2007 |master$ID == fte07$ID, fte07$Full_Time_Equivalent_Employees,"NA")))
-                                #ifelse(master$YEAR == 2002 |master$ID == fte02$ID, fte02$Full_Time_Equivalent_Employees,
-                                      # ifelse(master$YEAR == 1997 |master$ID == fte97$ID, fte97$Full_Time_Equivalent_Employees)
+master<-rename(master, "YEAR"="ID")
+master<-separate(master, "YEAR", into = c("X" , "YEAR"), sep=1, remove = TRUE)
+master<-subset(master, select = -c(4))
+
+master$FTE<-
+ with(master, if_else(master$YEAR == 2017 & master$GOVSid == fte17$ID, fte17$Full_Time_Equivalent_Employees, "NA"
+  ))
+
+
+
+master$FTE<-ifelse(master$YEAR == 2017 |master$GOVSid == fte17$ID, fte17$Full_Time_Equivalent_Employees, "NA")
+                 
+
+ ifelse(master$YEAR == 2012 |master$GOVSid == fte12$ID, fte12$Full_Time_Equivalent_Employees,
+                         ifelse(master$YEAR == 2007 |master$GOVSid == fte07$ID, fte07$Full_Time_Equivalent_Employees,
+                                ifelse(master$YEAR == 2002 |master$GOVSid == fte02$ID, fte02$Full_Time_Equivalent_Employees,
+                                      ifelse(master$YEAR == 1997 |master$GOVSid == fte97$ID, fte97$Full_Time_Equivalent_Employees,"NA")))))
 ```
 
 
 Merge the linking file to the FTE data 
 ```{r}
-ID_match_FTE<-merge(fte,gov_fips, by.x="ID",by.y="ID", no.dups = TRUE)
+#ID_match_FTE<-merge(fte,gov_fips, by.x="ID",by.y="ID", no.dups = TRUE)
 
 ##filter out only the rows that have the data function of 000 which is the total - all government employment functions.
-ID_match_FTE<-filter(ID_match_FTE, Data_Function == "000")
-ID_match_FTE<-subset(ID_match_FTE, select=-c(Name))
+#ID_match_FTE<-filter(ID_match_FTE, Data_Function == "000")
+#ID_match_FTE<-subset(ID_match_FTE, select=-c(Name))
 
 ```
 
 
-
-```{r}
-
-fte_output<-merge(ID_match_FTE,master, by.x="FIPS",by.y="FIPS")
-fte_output<-unique(fte_output)
-
-```
-
-Subset out the rows of interest
+Subset out the columns of interest
 ```{r}
 fte_output<-subset(fte_output, select=c(FIPS, ID, PWSID, Full_Time_Equivalent_Employees, PWS.Name))
 ```
 
 Save File Output
 ```{r}
-write.csv(fte_output, "fte_output_2017.csv")
+write.csv(master, "/Users/miritfriedman/Desktop/Squeeze Data/fte/FTE data/FTE Modified Files/final_fte_output.csv")
 ```
+
+Descriptive Statistics
 
